@@ -1,0 +1,12 @@
+.navbar {
+    height: 100px;
+}
+
+.navbar-text {
+    color: white;
+}
+
+.navbar-address {
+    font-weight: 600;
+    color: white;
+}

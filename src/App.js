@@ -1,25 +1,76 @@
-import logo from './logo.svg';
 import './App.css';
+import { BrowserRouter as Router, Route, Routes} from 'react-router-dom';
+import NavigationBar from './components/NavigationBar';
+import Home from './components/Home';
+import Container from 'react-bootstrap/Container';
+import Web3 from 'web3';
+import { useDispatch } from 'react-redux';
+import { changeAddress } from './reducers/addressSlice'
+import { useEffect, useState } from 'react';
+import NFtizer from 'contracts/Nftizer.sol/NFtizer.json'
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+    const ethereum = window.ethereum;
+    const dispatch = useDispatch();
+    const [error, setError] = useState('');
+    const [data, setData] = useState({
+        contractData: {},
+        contractAddress: '',
+        loading: true,
+    })
+    
+        if(window.ethereum) {
+            window.web3 = new Web3(window.ethereum);
+        } else if(window.web3) {
+            window.web3 = new Web3(window.web3.currentProvider);
+        } else {
+            window.alert("No Web3 Provider installed in Browser. Please install Metamask");
+        }
+
+    const loadData = async() => {
+        const ethereum = window.ethereum;
+        await ethereum.request({method: "eth_requestAccounts"})
+        .then((accounts) => {
+            dispatch(changeAddress(accounts[0]))
+        }).catch((error) => {
+            if (error.code === 4001) {
+                setError("Please install Metamask first.");
+            } else {
+                setError(error.message);
+            }
+        })   
+    }
+
+    const loadContactData = async() => {
+        const web3 = window.web3;
+        const NFtizerContractData = await new web3.eth.Contract(NFtizer.abi, "0xCF66BAE45A9BbfDCae4E9D5c9E3FAb07797C5F25");
+        setData({
+            contractData: NFtizerContractData,
+            contractAddress: '0xCF66BAE45A9BbfDCae4E9D5c9E3FAb07797C5F25',
+            loading: false,
+        })
+    }
+
+    ethereum.on('accountsChanged', (accounts) => {
+        dispatch(changeAddress(accounts[0]))
+    })
+
+    useEffect(() => {
+        loadContactData();
+    }, [])
+
+
+    return (
+        <Router>
+            <Container fluid className="App g-0">
+                <NavigationBar/>
+                <Routes>
+                    <Route exact path="/" element={<Home error={error} data={data}/>}/>
+                </Routes>
+            </Container>
+        </Router>  
+    );
 }
 
 export default App;
