@@ -1,0 +1,15 @@
+
+
+.NFTSubmissionForm {
+    text-align: start;
+    background-color: #15172b;
+    border-radius: 20px;
+    box-sizing: border-box;
+    height: 500px;
+    padding: 20px;
+}
+
+.generate-nft-button {
+    width: 100%;
+    text-align: center;
+}

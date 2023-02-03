@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import {Row, Col, Form, Button, Alert} from "react-bootstrap";
 import '../assets/css/home.css';
-import { NFTStorage, File } from 'nft.storage'
+import { NFTStorage, File } from 'nft.storage';
+import '../assets/css/nftCreator.css';
 
 const NFTCreator = (props) => {
 
@@ -66,30 +67,38 @@ const NFTCreator = (props) => {
     }, [selectedFile]);
 
     return(
-        <>
-        <Row>
-            <Form className="NFTSubmissionForm" onSubmit={handleNFTCreation}>
-                <Form.Group controlId="NFTNameControl">
-                    <Form.Label>Name</Form.Label>
-                    <Form.Control type="text" placeholder="Name for your NFT" required/>
-                </Form.Group>
-                <Form.Group controlId="NFTDescriptionControl">
-                    <Form.Label>Description</Form.Label>
-                    <Form.Control type="textarea" placeholder="Describe your Image..." required/>
-                </Form.Group>
-                <Form.Group controlId="NFTFormControl">
-                    <Form.Label>Upload your image</Form.Label>
-                    <Form.Control type="file" accept="image/png, image/jpeg" onChange={handleFileChange} required/>
-                </Form.Group>
+        <Row className="nftform-row g-0 mt-5">
+            <Col lg={4} xs={12} sm={12} className="mx-auto">
+                <Form className="NFTSubmissionForm" onSubmit={handleNFTCreation}>
 
-                <Button type="submit" variant="success" className="mt-4" disabled={loadingState.isLoading}>Generate NFT</Button>
-            </Form>
-        </Row>
-        <Row className="mt-3">
+                    <div className="title">Nftizer</div>
+                    <div className="subtitle">Create Your NFT</div>
+
+                    <Form.Group controlId="NFTNameControl" className="input-Container">
+                        <Form.Label>Name</Form.Label>
+                        <Form.Control type="text" placeholder="Name for your NFT" className="input-fields" required/>
+                    </Form.Group>
+
+                    <Form.Group controlId="NFTDescriptionControl">
+                        <Form.Label>Description</Form.Label>
+                        <Form.Control as="textarea" rows={4} placeholder="Describe your Image..." className="input-fields"  required/>
+                    </Form.Group>
+
+                    <Form.Group controlId="NFTFormControl">
+                        <Form.Label>Upload your image</Form.Label>
+                        <Form.Control type="file" accept="image/png, image/jpeg" onChange={handleFileChange} required/>
+                    </Form.Group>
+                    
+                    <Button type="submit" variant="success" className="mt-4 generate-nft-button btn btn-block" disabled={loadingState.isLoading}>Generate NFT</Button>
+            
+                </Form>
+            </Col>
+             {/* <Row className="mt-3">
             {loadingState.loadingMessage !== "" ? <Alert variant="warning">{loadingState.loadingMessage}</Alert> : <></>}
+            </Row> */}
         </Row>
-        </>
         
+       
     )
 }
 

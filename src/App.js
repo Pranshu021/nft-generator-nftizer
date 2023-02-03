@@ -2,12 +2,14 @@ import './App.css';
 import { BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import NavigationBar from './components/NavigationBar';
 import Home from './components/Home';
+import NFTCreator from './components/NFTCreator';
 import Container from 'react-bootstrap/Container';
 import Web3 from 'web3';
 import { useDispatch } from 'react-redux';
 import { changeAddress } from './reducers/addressSlice'
 import { useEffect, useState } from 'react';
 import NFtizer from 'contracts/Nftizer.sol/NFtizer.json'
+
 
 function App() {
 
@@ -27,20 +29,6 @@ function App() {
         } else {
             window.alert("No Web3 Provider installed in Browser. Please install Metamask");
         }
-
-    const loadData = async() => {
-        const ethereum = window.ethereum;
-        await ethereum.request({method: "eth_requestAccounts"})
-        .then((accounts) => {
-            dispatch(changeAddress(accounts[0]))
-        }).catch((error) => {
-            if (error.code === 4001) {
-                setError("Please install Metamask first.");
-            } else {
-                setError(error.message);
-            }
-        })   
-    }
 
     const loadContactData = async() => {
         const web3 = window.web3;
@@ -67,6 +55,7 @@ function App() {
                 <NavigationBar/>
                 <Routes>
                     <Route exact path="/" element={<Home error={error} data={data}/>}/>
+                    <Route path='/createnft' element={<NFTCreator data={data}/>} />
                 </Routes>
             </Container>
         </Router>  
