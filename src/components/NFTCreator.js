@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import {Row, Col, Form, Button, Alert} from "react-bootstrap";
+import {Row, Col, Form, Button, Alert, Modal} from "react-bootstrap";
 import '../assets/css/home.css';
 import { NFTStorage, File } from 'nft.storage';
 import '../assets/css/nftCreator.css';
@@ -8,7 +8,6 @@ import { unstable_renderSubtreeIntoContainer } from "react-dom";
 const NFTCreator = (props) => {
 
     const [selectedFile, setSelectedFile] = useState();
-    const [filepath, setFilePath] = useState();
     const [finalImageFile, setFinalImageFile] = useState();
     const [loadingState, setLoadingState] = useState({
         isLoading: false,
@@ -16,11 +15,31 @@ const NFTCreator = (props) => {
     });
     const [errorMessage, setErrorMessage] = useState("");
     const [jsonData, setJsonData] = useState({});
-    
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+        
     const nftStorage = new NFTStorage({token: process.env.REACT_APP_NFTSTORAGE_API_KEY})
+    const modal = (
+        <Modal show={show} onHide={handleClose}>
+            <Modal.Header closeButton>
+                <Modal.Title>Modal heading</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Alert variant="warning">{loadingState.loadingMessage}</Alert>
+            </Modal.Body>
+            <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+                Close
+            </Button>
+            </Modal.Footer>
+        </Modal>
+      )
 
     const handleNFTCreation = async(event) => {
         event.preventDefault();
+        handleShow();
         storeNFT(event.target.NFTNameControl.value, event.target.NFTDescriptionControl.value)
     }
 
@@ -36,11 +55,15 @@ const NFTCreator = (props) => {
             image: finalImageFile,
             properties: jsonData.properties
         }).then((tokenData) => {
-            const nftData = "Metadata : " + tokenData.data.url + "\nImage : " + tokenData.data.image.href + "\n"
             setLoadingState({
                 isLoading: true,
-                loadingMessage: "Image and Metadata Successfully Stored on IPFS Network." + nftData + "Minting NFT....."
+                loadingMessage: "Image and Metadata Uploaded Successfully. Minting NFT..."
             })
+            // const nftData = "Metadata : " + tokenData.data.url + "\nImage : " + tokenData.data.image.href + "\n"
+            // setLoadingState({
+            //     isLoading: true,
+            //     loadingMessage: "Image and Metadata Successfully Stored on IPFS Network." + nftData + "Minting NFT....."
+            // })
         })
     }
 
@@ -83,10 +106,15 @@ const NFTCreator = (props) => {
             return
         }
         const objectUrl = URL.createObjectURL(selectedFile);
-        console.log(objectUrl)
-        setFilePath(objectUrl, selectedFile.name);
         fileFromPath(objectUrl)
     }, [selectedFile]);
+
+    useEffect(() => {
+        if(!jsonData) {
+            return
+        }
+        
+    }, [jsonData])
 
     return(
         <Row className="nftform-row g-0 mt-5">
@@ -122,9 +150,7 @@ const NFTCreator = (props) => {
             
                 </Form>
             </Col>
-             {/* <Row className="mt-3">
-            {loadingState.loadingMessage !== "" ? <Alert variant="warning">{loadingState.loadingMessage}</Alert> : <></>}
-            </Row> */}
+            {modal}
         </Row>
         
        
