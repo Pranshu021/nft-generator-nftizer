@@ -3,6 +3,7 @@ import {Row, Col, Form, Button, Alert} from "react-bootstrap";
 import '../assets/css/home.css';
 import { NFTStorage, File } from 'nft.storage';
 import '../assets/css/nftCreator.css';
+import { unstable_renderSubtreeIntoContainer } from "react-dom";
 
 const NFTCreator = (props) => {
 
@@ -13,6 +14,8 @@ const NFTCreator = (props) => {
         isLoading: false,
         loadingMessage: ""
     });
+    const [errorMessage, setErrorMessage] = useState("");
+    const [jsonData, setJsonData] = useState({});
     
     const nftStorage = new NFTStorage({token: process.env.REACT_APP_NFTSTORAGE_API_KEY})
 
@@ -26,10 +29,12 @@ const NFTCreator = (props) => {
             isLoading: true,
             loadingMessage: "Storing Image and Metadata in IPFS Network. Please Wait...."
         })
+        if(!jsonData.properties) {setJsonData({})}
         await nftStorage.store({
             name: name,
             description: description,
-            image: finalImageFile
+            image: finalImageFile,
+            properties: jsonData.properties
         }).then((tokenData) => {
             const nftData = "Metadata : " + tokenData.data.url + "\nImage : " + tokenData.data.image.href + "\n"
             setLoadingState({
@@ -55,11 +60,28 @@ const NFTCreator = (props) => {
         console.log(event.target.files)
     }
 
+    const handleAttributeUpload = async(event) => {
+        const fileReader = new FileReader();
+        fileReader.readAsText(event.target.files[0], "UTF-8");
+        fileReader.onload = e => {
+            try {
+                const json_obj = JSON.parse(e.target.result);
+                if(Object.keys(json_obj).length === 1 && json_obj.properties) {
+                    setJsonData(json_obj);
+                } else {
+                    setErrorMessage("Invalid JSON. Properties json file should only have \"properties\" object")
+                    return
+                }
+            } catch(error) {
+                setErrorMessage(error.message);
+            }
+        };
+    } 
+
     useEffect(() => {
         if (!selectedFile) {
             return
         }
-
         const objectUrl = URL.createObjectURL(selectedFile);
         console.log(objectUrl)
         setFilePath(objectUrl, selectedFile.name);
@@ -72,7 +94,7 @@ const NFTCreator = (props) => {
                 <Form className="NFTSubmissionForm" onSubmit={handleNFTCreation}>
 
                     <div className="title">Nftizer</div>
-                    <div className="subtitle">Create Your NFT</div>
+                    {/* <div className="subtitle">Create Your NFT</div> */}
 
                     <Form.Group controlId="NFTNameControl" className="input-Container">
                         <Form.Label>Name</Form.Label>
@@ -88,6 +110,13 @@ const NFTCreator = (props) => {
                         <Form.Label>Upload your image</Form.Label>
                         <Form.Control type="file" accept="image/png, image/jpeg" onChange={handleFileChange} required/>
                     </Form.Group>
+
+                    <Form.Group controlId="NFTFormControl">
+                        <Form.Label>Upload attributes JSON</Form.Label>
+                        <Form.Control type="file" accept="text/json" onChange={handleAttributeUpload} required/>
+                    </Form.Group>
+
+                    {errorMessage ? <Alert variant="danger" className="mt-2">{errorMessage}</Alert> : <></>}
                     
                     <Button type="submit" variant="success" className="mt-4 generate-nft-button btn btn-block" disabled={loadingState.isLoading}>Generate NFT</Button>
             

@@ -1,12 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Shadows+Into+Light&display=swap');
 
 
 .NFTSubmissionForm {
     text-align: start;
-    background-color: #15172b;
+    /* background-color: #15172b; */
     border-radius: 20px;
     box-sizing: border-box;
     height: 500px;
     padding: 20px;
+}
+
+.title {
+    text-align: center;
+    font-family: 'Shadows Into Light', cursive;
+    font-size: 48pt;
 }
 
 .generate-nft-button {
