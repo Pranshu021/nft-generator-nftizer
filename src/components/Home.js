@@ -16,15 +16,6 @@ const Home = (props) => {
 
     
     return(
-        // <Container>
-        //     <Row className="header-row mt-4">
-        //         <Col lg={12} xs={12}><h1>Nftizer</h1></Col>
-        //     </Row>
-        //     <Row className="description-row mt-2 mb-2">
-        //         <Col lg={12} xs={12}><span className="description-text">Have a cool Picture ? Convert it into NFT and really Own it</span></Col>
-        //     </Row>
-        //     {<NFTCreator data={props.data}/>}
-        // </Container>
         <Row className="homepage-row g-0">
             <Col lg={12} xs={12} className="intro-column">
                 <h1 className='Heading'>Nftizer</h1>

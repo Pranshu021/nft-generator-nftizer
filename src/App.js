@@ -12,13 +12,13 @@ import NFtizer from 'contracts/Nftizer.sol/NFtizer.json'
 
 
 function App() {
-
     const ethereum = window.ethereum;
     const dispatch = useDispatch();
     const [error, setError] = useState('');
     const [data, setData] = useState({
         contractData: {},
         contractAddress: '',
+        ownerAddress: '0x3F932089D4d3d4CC6D4d301CeB22a6d6863A45B6',
         loading: true,
     })
     
@@ -34,6 +34,7 @@ function App() {
         const web3 = window.web3;
         const NFtizerContractData = await new web3.eth.Contract(NFtizer.abi, "0xCF66BAE45A9BbfDCae4E9D5c9E3FAb07797C5F25");
         setData({
+            ...data,
             contractData: NFtizerContractData,
             contractAddress: '0xCF66BAE45A9BbfDCae4E9D5c9E3FAb07797C5F25',
             loading: false,

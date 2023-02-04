@@ -3,7 +3,7 @@ import {Row, Col, Form, Button, Alert, Modal} from "react-bootstrap";
 import '../assets/css/home.css';
 import { NFTStorage, File } from 'nft.storage';
 import '../assets/css/nftCreator.css';
-import { unstable_renderSubtreeIntoContainer } from "react-dom";
+import MintNFT from "./MintNFT";
 
 const NFTCreator = (props) => {
 
@@ -15,6 +15,7 @@ const NFTCreator = (props) => {
     });
     const [errorMessage, setErrorMessage] = useState("");
     const [jsonData, setJsonData] = useState({});
+    const [tokenData, setTokenData] = useState();
     const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
@@ -59,11 +60,8 @@ const NFTCreator = (props) => {
                 isLoading: true,
                 loadingMessage: "Image and Metadata Uploaded Successfully. Minting NFT..."
             })
-            // const nftData = "Metadata : " + tokenData.data.url + "\nImage : " + tokenData.data.image.href + "\n"
-            // setLoadingState({
-            //     isLoading: true,
-            //     loadingMessage: "Image and Metadata Successfully Stored on IPFS Network." + nftData + "Minting NFT....."
-            // })
+            setTokenData(tokenData);
+            
         })
     }
 
@@ -73,14 +71,12 @@ const NFTCreator = (props) => {
         let file_extension = selectedFile.name.split(".")[1];
         if(file_extension === 'jpg' || file_extension === 'jpeg') {file_extension = "jpeg"}
         const image = new File([imageBlob], selectedFile.name.split(".")[0], {type: 'image/'+ file_extension});
-        console.log(image)
         setFinalImageFile(image)
         return image;
     }
 
     const handleFileChange = (event) => {
         setSelectedFile(event.target.files[0])
-        console.log(event.target.files)
     }
 
     const handleAttributeUpload = async(event) => {
@@ -141,16 +137,19 @@ const NFTCreator = (props) => {
 
                     <Form.Group controlId="NFTFormControl">
                         <Form.Label>Upload attributes JSON</Form.Label>
-                        <Form.Control type="file" accept="text/json" onChange={handleAttributeUpload} required/>
+                        <Form.Control type="file" accept="text/json" onChange={handleAttributeUpload}/>
                     </Form.Group>
 
                     {errorMessage ? <Alert variant="danger" className="mt-2">{errorMessage}</Alert> : <></>}
                     
                     <Button type="submit" variant="success" className="mt-4 generate-nft-button btn btn-block" disabled={loadingState.isLoading}>Generate NFT</Button>
+                    {/* <Button variant="primary" onClick={handleShow}></Button> */}
             
                 </Form>
             </Col>
             {modal}
+                
+            {tokenData ? <MintNFT data={props.data} tokenData={tokenData} /> : <></>}
         </Row>
         
        
@@ -168,5 +167,7 @@ export default NFTCreator;
 data.ipnft => CID of Token
 data.url   => Metadata.json url
 data.data.image.href => Image url
+data.description => Description of token
+
 */
 
